@@ -13,9 +13,9 @@ func TestCountLines(t *testing.T) {
 
 	want := 3
 
-	c := &counter.Counter{
-		Input: bytes.NewBufferString(s),
-	}
+	c := counter.NewCounter(
+		counter.WithInput(bytes.NewBufferString(s)),
+	)
 
 	got := c.Lines()
 

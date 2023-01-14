@@ -6,13 +6,15 @@ import (
 	"os"
 )
 
-type Counter struct {
-	Input io.Reader
+type counter struct {
+	input io.Reader
 }
 
-func (c *Counter) Lines() int {
+type option func(counter) counter
+
+func (c *counter) Lines() int {
 	lines := 0
-	scanner := bufio.NewScanner(c.Input)
+	scanner := bufio.NewScanner(c.input)
 	for scanner.Scan() {
 		lines++
 	}
@@ -20,11 +22,23 @@ func (c *Counter) Lines() int {
 	return lines
 }
 
-func NewCounter() *Counter {
-	return &Counter{
-		Input: os.Stdin,
+func WithInput(i io.Reader) option {
+	return func(c counter) counter {
+		c.input = i
+		return c
+	}
+}
+
+func NewCounter(opts ...option) *counter {
+	c := counter{
+		input: os.Stdout,
 	}
 
+	for _, opt := range opts {
+		c = opt(c)
+	}
+
+	return &c
 }
 
 func Lines() int {
